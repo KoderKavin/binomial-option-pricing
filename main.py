@@ -21,7 +21,7 @@ def main():
     args = parser.parse_args()
     
     if args.purge_options:
-        print("Purging mock options data...")
+        print("Purging options data...")
         from src.data.db import purge_options_data
         purge_options_data()
         print("Options data purged.")

@@ -54,8 +54,8 @@ Positions are monitored daily for convergence, sub-intrinsic decay triggers, and
 ```mermaid
 flowchart TD
     subgraph Data Layer
-        YF[Yahoo Finance Client] --> DB[SQLite Market DB]
-        TT[ThetaTerminal REST API v3] --> DB
+        YF[Yahoo Finance Client] --> DB[(SQLite Market DB)]
+        TD[ThetaData Google Option History] --> DB
         DB --> Repo[Data Repository]
     end
 
@@ -202,7 +202,6 @@ binomial-option/
 ├── config.py                 # Core hyperparameters, rates, and fee schedules
 ├── main.py                   # Unified CLI entry point
 ├── requirements.txt          # Production dependencies
-├── run_terminal.sh           # Runner script for ThetaTerminal REST API v3
 ├── data/
 │   └── market_data.db        # SQLite persistence layer for equity & options
 ├── src/
@@ -218,7 +217,6 @@ binomial-option/
 │   └── data/
 │       ├── db.py             # SQLite schema, queries & persistence
 │       ├── repository.py     # Data access facade & volatility calculator
-│       ├── thetadata_client.py # ThetaTerminal v3 REST API connector
 │       └── yfinance_client.py  # Yahoo Finance equity loader
 └── tests/
     ├── test_binomial.py      # Numerical stability, bounds & early exercise tests
@@ -231,7 +229,6 @@ binomial-option/
 
 ### 1. System Requirements
 * Python 3.10 or higher
-* Java Runtime Environment (JRE 11+) *(Required only if running live ThetaTerminal API)*
 
 ### 2. Environment Setup
 
@@ -251,17 +248,9 @@ pip install -r requirements.txt
 
 ## Data Pipeline & Market Connectivity
 
-The platform features an automated dual data provider pipeline:
+The platform operates on a self-contained local SQLite database (`data/market_data.db`):
 1. **Equity Spot & Corporate Actions:** Automated retrieval from Yahoo Finance (`yfinance`), caching daily OHLCV and dividend records to SQLite.
-2. **Historical Options Chains:** Connects to [ThetaData's ThetaTerminal](https://www.thetadata.net/) via local REST API v3 (`http://127.0.0.1:25503/v3`).
-
-To launch the background ThetaTerminal daemon (if available):
-```bash
-chmod +x run_terminal.sh
-./run_terminal.sh
-```
-
-*Note: If ThetaTerminal is not running, the backtest engine gracefully falls back to synthetic intrinsic settlement pricing on contract expiration.*
+2. **Historical Options Chains:** We extracted the option history of Google stock (`GOOGL`) from ThetaData and stored it in the local database (`option_contracts` table). This provides full historical weekly option chains—including strikes, closing quotes, bid/ask spreads, trading volume, open interest, and implied volatilities—enabling reliable and fast backtesting directly from the database without requiring external runtime services. If a contract quote is not present on an expiration date, the engine calculates the analytical intrinsic settlement value ($V = \max(\phi \cdot (S - K), 0)$).
 
 ---
 
@@ -288,7 +277,7 @@ python main.py --run-backtest --symbol GOOGL --capital 100000.0
 ```
 
 ### 4. Database Cache Maintenance
-Purge option records to force fresh chain ingestion:
+Purge option records from the local database:
 ```bash
 python main.py --purge-options
 ```

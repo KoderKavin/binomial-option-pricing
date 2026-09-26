@@ -3,7 +3,6 @@ import numpy as np
 from datetime import datetime
 from src.data.db import get_stock_data, get_options_data, get_specific_option_contract
 from src.data.yfinance_client import fetch_and_store_stock_data
-from src.data.thetadata_client import fetch_and_store_options_data
 
 def get_historical_volatility(symbol: str, target_date: str, window: int = 30) -> float:
     """Calculates historical volatility based on trailing stock returns."""
@@ -40,11 +39,6 @@ def get_atm_option(symbol: str, date: str, stock_price: float):
         days_to_friday += 7
     friday_str = (date_obj + pd.Timedelta(days=days_to_friday)).strftime("%Y-%m-%d")
 
-    try:
-        fetch_and_store_options_data(symbol, date, expiration_str=friday_str)
-    except (ConnectionError, ValueError) as e:
-        print(f"Notice: {e}")
-
     df = get_options_data(symbol, date)
     if df.empty:
         return None, None
@@ -69,11 +63,6 @@ def get_option_quote(symbol: str, date: str, strike: float, right: str, expirati
     Retrieves the specific contract's market price. If missing (e.g. at expiration),
     calculates intrinsic settlement value.
     """
-    try:
-        fetch_and_store_options_data(symbol, date, expiration_str=expiration)
-    except (ConnectionError, ValueError):
-        pass
-        
     df = get_specific_option_contract(symbol, date, strike, right, expiration)
     
     if not df.empty:

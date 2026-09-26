@@ -5,8 +5,6 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, 'data')
 DB_PATH = os.path.join(DATA_DIR, 'market_data.db')
 
-# API Settings
-THETA_TERMINAL_URL = 'http://127.0.0.1:25503/v3'
 
 # Backtest Settings
 SYMBOL = 'GOOGL'
