@@ -55,7 +55,7 @@ Positions are monitored daily for convergence, sub-intrinsic decay triggers, and
 flowchart TD
     subgraph Data Layer
         YF[Yahoo Finance Client] --> DB[(SQLite Market DB)]
-        TD[ThetaData Google Option History] --> DB
+        TD[ThetaData Option History] --> DB
         DB --> Repo[Data Repository]
     end
 
