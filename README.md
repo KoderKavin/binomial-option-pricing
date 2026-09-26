@@ -5,7 +5,6 @@
 [![Tests](https://img.shields.io/badge/Tests-Passing-brightgreen.svg?logo=pytest&logoColor=white)](tests/)
 [![Model](https://img.shields.io/badge/Model-CRR%20Binomial-orange.svg)](#mathematical--theoretical-framework)
 [![Data](https://img.shields.io/badge/Data-ThetaData%20%7C%20Yahoo%20Finance-9cf.svg)](#data-pipeline--market-connectivity)
-[![License](https://img.shields.io/badge/License-MIT-lightgrey.svg)](LICENSE)
 
 An institutional-grade quantitative framework for pricing American-style equity options and exploiting market mispricings. The engine implements a **Cox-Ross-Rubinstein (CRR) Binomial Tree** pricing model featuring backward induction and discrete early-exercise verification. 
 
@@ -55,7 +54,7 @@ Positions are monitored daily for convergence, sub-intrinsic decay triggers, and
 flowchart TD
     subgraph Data Layer
         YF[Yahoo Finance Client] --> DB[(SQLite Market DB)]
-        TD[ThetaData Option History] --> DB
+        TD[ThetaData Option] --> DB
         DB --> Repo[Data Repository]
     end
 
