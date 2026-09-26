@@ -32,7 +32,6 @@ It executes an automated, self-financing, delta-hedged relative-value arbitrage 
 - [Configuration Reference](#configuration-reference)
 - [Test Suite](#test-suite)
 - [Performance Reporting Sample](#performance-reporting-sample)
-- [Disclaimer & License](#disclaimer--license)
 
 ---
 
