@@ -54,27 +54,27 @@ Positions are monitored daily for convergence, sub-intrinsic decay triggers, and
 ```mermaid
 flowchart TD
     subgraph Data Layer
-        YF[Yahoo Finance Client] --> DB[(SQLite Market DB)]
+        YF[Yahoo Finance Client] --> DB[SQLite Market DB]
         TT[ThetaTerminal REST API v3] --> DB
-        DB --> Repo[Data Repository & Volatility Estimator]
+        DB --> Repo[Data Repository and Volatility Estimator]
     end
 
     subgraph Pricing Core
-        Repo --> CRR[Binomial Pricer (CRR Model)]
-        CRR --> Theo[Theoretical Price V0 & Delta]
+        Repo --> CRR[Binomial Pricer CRR Model]
+        CRR --> Theo[Theoretical Price V0 and Delta]
     end
 
-    subgraph Strategy & Portfolio
+    subgraph Strategy and Portfolio
         Theo --> Arb[Arbitrage Strategy Engine]
         Repo --> Arb
-        Arb --> Port[Portfolio State & Margin Tracker]
-        Port --> Monitor{Daily Exit Trigger Check}
+        Arb --> Port[Portfolio State and Margin Tracker]
+        Port --> Monitor[Daily Exit Trigger Check]
     end
 
     subgraph Evaluation
         Monitor --> Engine[Backtest Engine]
         Engine --> Bench[Buy-and-Hold Benchmark]
-        Engine --> Metrics[Performance & Risk Reporter]
+        Engine --> Metrics[Performance and Risk Reporter]
     end
 ```
 
