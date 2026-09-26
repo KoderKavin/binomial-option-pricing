@@ -68,3 +68,5 @@ venv.bak/
 # Project specific
 data/
 patch.py
+
+run_terminal.sh
