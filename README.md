@@ -159,38 +159,23 @@ Net P&L accounts for institutional transaction costs and financing drag:
 
 ## Weekly Execution Cycle
 
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Trader as Arbitrage Engine
-    participant Pricing as CRR Model
-    participant Market as SQLite / Live Feeds
-    participant Broker as Portfolio State
+The arbitrage strategy operates on a structured, weekly schedule from Monday to Friday:
 
-    Note over Trader,Broker: Monday (t0) - Initiation
-    Trader->>Market: Fetch S0, ATM Option Chain & Historical Vol
-    Trader->>Pricing: Solve Binomial Tree (V0, Delta0)
-    alt Market Option C0 > V0 (Overpriced)
-        Trader->>Broker: Short Option + Long Delta Shares + Borrow Balance
-    else Market Option C0 < V0 (Underpriced)
-        Trader->>Broker: Long Option + Short Delta Shares + Deposit Cash
-    end
+### 1. Monday ($t_0$) - Initiation
+* **Data Ingestion:** The engine fetches the current spot price ($S_0$), ATM option chain data, and historical volatility.
+* **Pricing & Hedge Calculation:** The CRR Binomial Tree is solved to determine the theoretical fair value ($V_0$) and the hedge ratio ($\Delta_0$).
+* **Position Entry:**
+  * **Overpriced Option ($C_0 > V_0$):** Short the option, buy $\Delta_0$ shares, and borrow cash to cover the balance.
+  * **Underpriced Option ($C_0 < V_0$):** Long the option, short $\Delta_0$ shares, and deposit the net cash.
 
-    Note over Trader,Broker: Tuesday (t1) - Thursday (t3) - Intraday Monitoring
-    loop Daily EOD Review
-        Trader->>Pricing: Recalculate Vi at current spot Si
-        alt Vi < Intrinsic Value (Sub-Intrinsic Trigger)
-            Trader->>Broker: Early Liquidation (Close all legs)
-        else
-            Trader->>Broker: Apply Daily Carry Interest
-        end
-    end
+### 2. Tuesday ($t_1$) to Thursday ($t_3$) - Intraday Monitoring
+* **Daily EOD Review:** At the end of each trading day, the theoretical value ($V_i$) is recalculated based on the updated spot price ($S_i$).
+* **Early Liquidation:** If the option's theoretical value falls below its intrinsic value (Sub-Intrinsic Trigger), all legs of the position are immediately closed.
+* **Carry Accounting:** If the position is held, the daily carry interest is applied to the cash balance.
 
-    Note over Trader,Broker: Friday (t4) - Mandatory Settlement
-    opt If Position Still Open
-        Trader->>Broker: Exercise / Liquidate Option + Cover Equity + Settle Cash
-    end
-```
+### 3. Friday ($t_4$) - Mandatory Settlement
+* **Final Liquidation:** Any positions remaining open at expiration are forcefully settled.
+* **Settlement Mechanics:** Options are exercised or cash-settled, equity hedges are covered or sold, and the final net cash balance is recorded.
 
 ---
 
