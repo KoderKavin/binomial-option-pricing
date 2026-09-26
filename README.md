@@ -56,7 +56,7 @@ flowchart TD
     subgraph Data Layer
         YF[Yahoo Finance Client] --> DB[SQLite Market DB]
         TT[ThetaTerminal REST API v3] --> DB
-        DB --> Repo[Data Repository and Volatility Estimator]
+        DB --> Repo[Data Repository]
     end
 
     subgraph Pricing Core
@@ -67,14 +67,14 @@ flowchart TD
     subgraph Strategy and Portfolio
         Theo --> Arb[Arbitrage Strategy Engine]
         Repo --> Arb
-        Arb --> Port[Portfolio State and Margin Tracker]
+        Arb --> Port[Portfolio State Tracker]
         Port --> Monitor[Daily Exit Trigger Check]
     end
 
     subgraph Evaluation
         Monitor --> Engine[Backtest Engine]
         Engine --> Bench[Buy-and-Hold Benchmark]
-        Engine --> Metrics[Performance and Risk Reporter]
+        Engine --> Metrics[Performance Reporter]
     end
 ```
 
